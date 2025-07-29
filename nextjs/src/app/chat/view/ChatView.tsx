@@ -1,17 +1,17 @@
 'use client';
 
-import {
-  useGetMessagesBySessionQuery,
-  useSendMessageMutation,
-} from '@/features/chat/useChatService';
-import { useState } from 'react';
+// import {
+//   useGetMessagesBySessionQuery,
+//   useSendMessageMutation,
+// } from '@/features/chat/useChatService';
+// import { useState } from 'react';
 
 const ChatView = () => {
-  const [message, setMessage] = useState('');
-  const params = { message, sessionId };
+  // const [message, setMessage] = useState('');
+  // const params = { message, sessionId };
 
-  const { data: messagesBySession } = useGetMessagesBySessionQuery(sessionId);
-  const { mutate: sendMessage } = useSendMessageMutation(params);
+  // const { data: messagesBySession } = useGetMessagesBySessionQuery(sessionId);
+  // const { mutate: sendMessage } = useSendMessageMutation(params);
 
   return (
     <div className="flex-1 flex flex-col bg-zinc-950 text-zinc-100 min-h-screen">
@@ -43,7 +43,7 @@ const ChatView = () => {
             <div className="flex-1">
               <input
                 type="text"
-                placeholder="무엇이든 물어보세요"
+                placeholder="Feel free to ask anything"
                 className="w-full bg-transparent text-white placeholder-zinc-400 outline-none text-lg"
               />
             </div>

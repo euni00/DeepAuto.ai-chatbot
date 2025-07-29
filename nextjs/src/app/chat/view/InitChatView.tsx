@@ -1,12 +1,13 @@
-import { useState } from 'react';
+'use client';
 
-import { useSendMessageMutation } from '@/features/chat/useChatService';
+// import { useState } from 'react';
+// import { useSendMessageMutation } from '@/features/chat/useChatService';
 
 const InitChatView = () => {
-  const [message, setMessage] = useState('');
-  const params = { message, sessionId: null };
+  // const [message, setMessage] = useState('');
+  // const params = { message, sessionId: null };
 
-  const { mutate: sendMessage } = useSendMessageMutation(params);
+  // const { mutate: sendMessage } = useSendMessageMutation(params);
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center min-h-screen bg-zinc-900 p-4">
@@ -14,7 +15,7 @@ const InitChatView = () => {
       <div className="flex flex-col items-center max-w-2xl w-full">
         {/* Central Prompt */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-semibold text-white mb-4">활기찬 하루를 보내보아요!</h1>
+          <h1 className="text-3xl font-semibold text-white mb-4">Hope you have an energetic day!</h1>
         </div>
         {/* Input Field */}
         <div className="w-full max-w-3xl">
@@ -24,7 +25,7 @@ const InitChatView = () => {
               <div className="flex-1">
                 <input
                   type="text"
-                  placeholder="무엇이든 물어보세요"
+                  placeholder="Feel free to ask anything"
                   className="w-full bg-transparent text-white placeholder-zinc-400 outline-none text-lg"
                 />
               </div>
