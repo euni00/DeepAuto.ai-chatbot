@@ -1,5 +1,5 @@
-import SideBar from '@/common/SideBar';
-import Container from '@/common/Container';
+import SideBar from '@/common/Layout/SideBar';
+import Container from '@/common/Layout/Container';
 import ChatContainer from './chat';
 
 export default function Home() {

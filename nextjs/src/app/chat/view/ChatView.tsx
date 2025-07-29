@@ -1,4 +1,18 @@
+'use client';
+
+import {
+  useGetMessagesBySessionQuery,
+  useSendMessageMutation,
+} from '@/features/chat/useChatService';
+import { useState } from 'react';
+
 const ChatView = () => {
+  const [message, setMessage] = useState('');
+  const params = { message, sessionId };
+
+  const { data: messagesBySession } = useGetMessagesBySessionQuery(sessionId);
+  const { mutate: sendMessage } = useSendMessageMutation(params);
+
   return (
     <div className="flex-1 flex flex-col bg-zinc-950 text-zinc-100 min-h-screen">
       <div className="flex-1 p-6">

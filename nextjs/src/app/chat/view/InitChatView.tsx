@@ -1,4 +1,13 @@
+import { useState } from 'react';
+
+import { useSendMessageMutation } from '@/features/chat/useChatService';
+
 const InitChatView = () => {
+  const [message, setMessage] = useState('');
+  const params = { message, sessionId: null };
+
+  const { mutate: sendMessage } = useSendMessageMutation(params);
+
   return (
     <div className="flex-1 flex flex-col items-center justify-center min-h-screen bg-zinc-900 p-4">
       {/* Main Content */}
