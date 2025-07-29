@@ -1,19 +1,16 @@
-import { Button } from '@/components/ui/button';
+'use client';
+
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-
-const menu = [{ label: '새 채팅' }, { label: '채팅 검색' }, { label: '라이브러리' }];
-
-const projects = [
-  'DeepAuto.ai 프로젝트1',
-  'DeepAuto.ai 프로젝트2',
-  'DeepAuto.ai 프로젝트3',
-  'DeepAuto.ai 프로젝트4',
-  'DeepAuto.ai 프로젝트5',
-  'DeepAuto.ai 프로젝트6',
-];
+import { useGetChatSessionsQuery } from '@/features/chat/useChatService';
+import { useAtom } from 'jotai';
+import { sessionAtom } from '../store/session';
 
 export default function SideBar() {
+  const { data: chatSessions } = useGetChatSessionsQuery();
+  const [, setSessionId] = useAtom(sessionAtom);
+
   return (
     <aside className="flex flex-col h-screen w-64 bg-zinc-950 text-zinc-100 border-r border-zinc-800">
       {/* Top Section */}
@@ -21,28 +18,33 @@ export default function SideBar() {
         <div className="flex items-center gap-2 mb-4">
           <span className="text-lg font-semibold">DeepAuto.ai ChatBot</span>
         </div>
-        {menu.map((item, idx) => (
           <Button
-            key={idx}
             variant="ghost"
-            className="justify-start w-full gap-3 text-zinc-200 hover:bg-zinc-800"
+          className="justify-start w-full gap-3 text-zinc-200 hover:bg-zinc-800 hover:text-white"
+          onClick={() => setSessionId(null)}
           >
-            {item.label}
-          </Button>
-        ))}
+            New Chat
+        </Button>
+        <Button
+            variant="ghost"
+            className="justify-start w-full gap-3 text-zinc-200 hover:bg-zinc-800 hover:text-white"
+          >
+            Search Chat
+        </Button>
       </div>
       <Separator className="bg-zinc-800" />
       {/* Projects Section */}
       <div className="flex-1 overflow-y-auto p-4">
         <div className="text-xs text-zinc-400 mb-2">채팅</div>
-        <div className="flex flex-col gap-1">
-          {projects.map((proj, idx) => (
+        <div className="flex flex-col gap-1 h-full">
+          {chatSessions?.map((item, index) => (
             <Button
-              key={idx}
+              key={index}
               variant="ghost"
-              className="justify-start w-full text-zinc-300 hover:bg-zinc-800 px-2 py-1 rounded"
+              className="justify-start w-full text-zinc-300 hover:bg-zinc-800 hover:text-white px-2 py-1 rounded"
+              onClick={() => setSessionId(item.sessionId)}
             >
-              {proj}
+              {item.title}
             </Button>
           ))}
         </div>
