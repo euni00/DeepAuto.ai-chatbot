@@ -1,14 +1,15 @@
-from fastapi import APIRouter, Depends
-from fastapi.responses import StreamingResponse
-from sqlalchemy.orm import Session
+import asyncio
+import os
+from typing import Optional
+from uuid import UUID
+
 from app.db.database import SessionLocal
 from app.models import ChatSession, Message
-from pydantic import BaseModel, Field
+from fastapi import APIRouter, Depends
+from fastapi.responses import JSONResponse, StreamingResponse
 from openai import OpenAI
-from uuid import UUID
-from typing import Optional
-import os
-import asyncio
+from pydantic import BaseModel, Field
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/chat", tags=["Chat"])
 
@@ -113,11 +114,20 @@ async def send_message(payload: SendMessageRequest, db: Session = Depends(get_db
     db.commit()
 
     # call DeepAuto API
-    stream = client.chat.completions.create(
-        model="openai/gpt-4o-mini-2024-07-18,deepauto/qwq-32b",
-        messages=history,
-        stream=True,
-    )
+    try: 
+        stream = client.chat.completions.create(
+            model="openai/gpt-4o-mini-2024-07-18,deepauto/qwq-32b",
+            messages=history,
+            stream=True,
+        )
+    except Exception as e: 
+        return JSONResponse(
+            status_code=500,
+            content={
+            "code": "AI_RESPONSE_ERROR",
+            "message": "An error occurred while generating the AI response."
+            }
+        );
 
     async def stream_response():
         loop = asyncio.get_event_loop()
