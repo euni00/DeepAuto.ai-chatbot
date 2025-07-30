@@ -1,9 +1,11 @@
-from sqlalchemy import Column, ForeignKey, String, DateTime
+import uuid
+from datetime import datetime, timezone
+
+from app.db.database import Base
+from sqlalchemy import JSON, Column, DateTime, ForeignKey, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-from app.models.chat_session import Base
-from datetime import datetime, timezone
-import uuid
+
 
 class Message(Base):
     __tablename__ = "messages"
@@ -13,6 +15,7 @@ class Message(Base):
     role = Column(String) # 'user' or 'assistant'
     content = Column(String)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    routing_payload = Column(JSON, nullable=True)
 
     # relationship
     session = relationship("ChatSession", backref="messages")

@@ -1,4 +1,5 @@
 import asyncio
+import json
 import os
 from typing import Optional
 from uuid import UUID
@@ -28,7 +29,7 @@ def get_db():
     finally:
         db.close()
 
-        # Response models with camelCase
+# Response models with camelCase
 class ChatSessionResponse(BaseModel):
     id: str = Field(alias="sessionId")
     title: str
@@ -41,10 +42,10 @@ class MessageResponse(BaseModel):
     role: str
     content: str
     created_at: str = Field(alias="createdAt")
+    routing_payload: Optional[dict] = Field(alias="routingPayload")
     
     class Config:
         populate_by_name = True
-
 
 @router.get("/sessions", summary="Get all chat sessions", response_model=list[ChatSessionResponse])
 def get_chat_sessions(db: Session = Depends(get_db)):
@@ -70,13 +71,12 @@ def get_messages(session_id: UUID, db: Session = Depends(get_db)):
         MessageResponse(
             role=message.role,
             content=message.content,
-            created_at=message.created_at.isoformat()
+            created_at=message.created_at.isoformat(),
+            routing_payload=message.routing_payload
         )
         for message in messages
     ]
 
-
-# send message request schema
 class SendMessageRequest(BaseModel):
     message: str
     session_id: Optional[str] = Field(None, alias="sessionId")
@@ -132,9 +132,22 @@ async def send_message(payload: SendMessageRequest, db: Session = Depends(get_db
     async def stream_response():
         loop = asyncio.get_event_loop()
         full_response = ""
+        routing_info_sent = False
 
         for chunk in stream:
-            content = chunk.choices[0].delta.content
+            delta = chunk.choices[0].delta
+            content = delta.content if hasattr(delta, "content") else ""
+
+            if not routing_info_sent and hasattr(delta, "query_routing"):
+                routing_info = delta.query_routing
+                routing_payload = {
+                    "type": "routing",
+                    "selected": routing_info["selected"],
+                    "candidates": routing_info["candidates"]
+                }
+                yield f"data: {json.dumps(routing_payload)}\n\n"
+                routing_info_sent = True
+
             if content:
                 full_response += content
                 yield f"data: {content}\n\n"
