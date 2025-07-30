@@ -21,15 +21,15 @@ const ChatView = ({ sessionId }: { sessionId: string }) => {
   );
 
   return (
-    <div className="flex-1 flex flex-col bg-zinc-950 text-zinc-100 min-h-screen">
-      <div className="flex-1 p-6 overflow-y-">
+    <div className="h-screen flex-1 flex flex-col text-zinc-100">
+      <div className="flex-1 p-6">
         <div className="max-w-4xl mx-auto w-full">
           {/* 1. Configuration Prompt Area */}
           {/* 2. AI Recommendation */}
           {messagesBySession?.map((item, index) => (
             <div key={index}>
               {item.role === 'user' ? (
-                <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4 mb-6">
+                <div className="bg-zinc-800 border border-zinc-800 rounded-lg p-4 mb-6">
                   <p>{item.content}</p>
                 </div>
               ) : (
@@ -57,7 +57,7 @@ const ChatView = ({ sessionId }: { sessionId: string }) => {
         )}
       </div>
       {/* Chat Input Bar */}
-      <div className="border-t border-zinc-800 p-4">
+      <div className="sticky bottom-0 border-t border-zinc-800 p-4">
         <div className="max-w-4xl mx-auto">
           <div className="bg-zinc-800 rounded-2xl border border-zinc-700 p-4 flex items-center gap-3">
             {/* Input Field */}
