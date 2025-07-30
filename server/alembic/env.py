@@ -1,9 +1,21 @@
+import os
 from logging.config import fileConfig
 
 from alembic import context
 from app.db.database import Base
 from app.models import chat_session, message
+from dotenv import load_dotenv
 from sqlalchemy import engine_from_config, pool
+
+load_dotenv()
+
+config = context.config
+database_url = os.getenv("DATABASE_URL")
+
+if database_url:
+    config.set_main_option("sqlalchemy.url", database_url)
+else:
+    raise ValueError("DATABASE_URL 환경변수가 설정되지 않았습니다.")
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
