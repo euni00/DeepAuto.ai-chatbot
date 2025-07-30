@@ -19,10 +19,14 @@ const useGetMessagesBySession = (sessionId: string) => {
   });
 };
 
-const useSendMessage = (params: ISendMessageParams, option: UseMutationOptions) => {
+const useSendMessage = (
+  params: ISendMessageParams,
+  setStreamedMessage: (streamedMessage: string) => void,
+  option: UseMutationOptions
+) => {
   return useMutation({
     mutationKey: [chatQueryKey.sendMessage],
-    mutationFn: sendMessageData(params),
+    mutationFn: sendMessageData(params, setStreamedMessage),
     ...option,
   });
 };

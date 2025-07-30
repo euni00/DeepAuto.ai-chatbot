@@ -1,6 +1,6 @@
 'use client';
 
-import { sessionAtom } from '@/common/store/session';
+import { sessionAtom } from '@/common/store/chatStore';
 import { useAtom } from 'jotai';
 import ChatView from './view/ChatView';
 import InitChatView from './view/InitChatView';
