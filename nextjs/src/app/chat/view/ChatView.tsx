@@ -1,24 +1,30 @@
 'use client';
 
 import { streamedMessageAtom } from '@/common/store/chatStore';
+import { TOAST_MESSAGE } from '@/constants/toastMessages';
 import {
   useGetMessagesBySessionQuery,
   useSendMessageMutation,
 } from '@/features/chat/useChatService';
 import { useAtom } from 'jotai';
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 
 const ChatView = ({ sessionId }: { sessionId: string }) => {
   const [message, setMessage] = useState('');
   const [streamedMessage, setStreamedMessage] = useAtom(streamedMessageAtom);
   const params = { message, sessionId };
 
-  const messagesBySession = useGetMessagesBySessionQuery(sessionId);
+  const { messagesBySession, isError } = useGetMessagesBySessionQuery(sessionId);
   const { mutate: sendMessage, isPending } = useSendMessageMutation(
     params,
     setStreamedMessage,
     setMessage
   );
+
+  if (isError) {
+    toast.error(TOAST_MESSAGE.ERROR.GET_MESSAGES_BY_SESSIONS);
+  }
 
   return (
     <div className="h-screen flex-1 flex flex-col text-zinc-100">

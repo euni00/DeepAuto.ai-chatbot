@@ -3,16 +3,18 @@
 import chatQueryKey from '@/api/queryKeys';
 import { useGetChatSessions, useGetMessagesBySession, useSendMessage } from '@/api/useChatQuery';
 import { ISendMessageParams } from '@/common/type/chat';
+import { TOAST_MESSAGE } from '@/constants/toastMessages';
 import { useQueryClient } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
 
 const useGetChatSessionsQuery = () => {
-  const { data: chatSessions } = useGetChatSessions();
-  return chatSessions;
+  const { data: chatSessions, isError } = useGetChatSessions();
+  return { chatSessions, isError };
 };
 
 const useGetMessagesBySessionQuery = (sessionId: string) => {
-  const { data: messagesBySession } = useGetMessagesBySession(sessionId);
-  return messagesBySession;
+  const { data: messagesBySession, isError } = useGetMessagesBySession(sessionId);
+  return { messagesBySession, isError };
 };
 
 const useSendMessageMutation = (
@@ -33,8 +35,8 @@ const useSendMessageMutation = (
       setStreamedMessage('');
       setMessage('');
     },
-    onError: (error: unknown) => {
-      console.log(error);
+    onError: () => {
+      toast.error(TOAST_MESSAGE.ERROR.SEND_MESSAGES);
     },
   });
 };

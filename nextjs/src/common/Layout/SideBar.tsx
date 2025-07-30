@@ -3,13 +3,19 @@
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { TOAST_MESSAGE } from '@/constants/toastMessages';
 import { useGetChatSessionsQuery } from '@/features/chat/useChatService';
 import { useAtom } from 'jotai';
+import { toast } from 'react-toastify';
 import { sessionAtom } from '../store/chatStore';
 
 export default function SideBar() {
-  const chatSessions = useGetChatSessionsQuery();
+  const { chatSessions, isError } = useGetChatSessionsQuery();
   const [, setSessionId] = useAtom(sessionAtom);
+
+  if (isError) {
+    toast.error(TOAST_MESSAGE.ERROR.GET_CHAT_SESSIONS);
+  }
 
   return (
     <aside className="flex flex-col h-screen w-64 bg-zinc-950 text-zinc-100 border-r border-zinc-800">
