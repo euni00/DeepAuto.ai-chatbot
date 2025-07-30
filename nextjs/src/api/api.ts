@@ -16,11 +16,9 @@ const getChatSessionsData = async (): Promise<IChatSessionsData[]> => {
 };
 
 // Get all chat sessions API
-const getMessagesBySessionData = (sessionId: string) => {
-  return async (): Promise<IMessagesBySessionData[]> => {
+const getMessagesBySessionData = async (sessionId: string): Promise<IMessagesBySessionData[]> => {
     const response = await axios.get(`${BASE_URL}/${CHAT}/${SESSIONS}/${sessionId}/messages`);
     return response.data;
-  };
 };
 
 // Send message API

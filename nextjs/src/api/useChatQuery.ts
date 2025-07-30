@@ -5,19 +5,17 @@ import { useMutation, UseMutationOptions, useQuery } from '@tanstack/react-query
 import { getChatSessionsData, getMessagesBySessionData, sendMessageData } from './api';
 import chatQueryKey from './queryKeys';
 
-const useGetChatSessions = (option: UseMutationOptions) => {
+const useGetChatSessions = () => {
   return useQuery({
     queryKey: [chatQueryKey.get],
     queryFn: getChatSessionsData,
-    ...option,
   });
 };
 
-const useGetMessagesBySession = (sessionId: string, option: UseMutationOptions) => {
+const useGetMessagesBySession = (sessionId: string) => {
   return useQuery({
-    queryKey: [chatQueryKey.getBySession],
+    queryKey: [chatQueryKey.getBySession, sessionId],
     queryFn: () => getMessagesBySessionData(sessionId),
-    ...option,
   });
 };
 

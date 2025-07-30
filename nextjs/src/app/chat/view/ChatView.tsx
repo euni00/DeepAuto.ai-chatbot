@@ -1,38 +1,36 @@
 'use client';
 
-// import {
-//   useGetMessagesBySessionQuery,
-//   useSendMessageMutation,
-// } from '@/features/chat/useChatService';
+import { useGetMessagesBySessionQuery } from '@/features/chat/useChatService';
 // import { useState } from 'react';
 
-const ChatView = () => {
+const ChatView = ({ sessionId }: { sessionId: string }) => {
   // const [message, setMessage] = useState('');
   // const params = { message, sessionId };
 
-  // const { data: messagesBySession } = useGetMessagesBySessionQuery(sessionId);
+  const messagesBySession = useGetMessagesBySessionQuery(sessionId);
   // const { mutate: sendMessage } = useSendMessageMutation(params);
 
   return (
     <div className="flex-1 flex flex-col bg-zinc-950 text-zinc-100 min-h-screen">
       <div className="flex-1 p-6">
         <div className="max-w-4xl mx-auto w-full">
-          {/* Configuration Prompt Area */}
-          <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4 mb-6">
-            <p>
-              Hi ChatGPT! I'm working on a React project. How can I handle API errors gracefully
-              when using fetch?
-            </p>
-          </div>
-          {/* Korean User Query and AI Recommendation */}
-          <div className="mb-8">
-            <div className="text-zinc-300 mb-4">
-              <p>
-                Hi! Great question. When using fetch, you can catch both network errors and handle
-                HTTP status codes manually. Here's a basic example:
-              </p>
+          {/* 1. Configuration Prompt Area */}
+          {/* 2. AI Recommendation */}
+          {messagesBySession?.map((item, index) => (
+            <div key={index}>
+              {item.role === 'user' ? (
+                <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4 mb-6">
+                  <p>{item.content}</p>
+                </div>
+              ) : (
+                <div className="mb-8">
+                  <div className="text-zinc-300 mb-4">
+                    <p>{item.content}</p>
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
+          ))}
         </div>
       </div>
       {/* Chat Input Bar */}

@@ -4,25 +4,13 @@ import { useGetChatSessions, useGetMessagesBySession, useSendMessage } from '@/a
 import { ISendMessageParams } from '@/common/type/chat';
 
 const useGetChatSessionsQuery = () => {
-  return useGetChatSessions({
-    onSuccess: (data) => {
-      console.log(data);
-    },
-    onError: (error: unknown) => {
-      console.log(error);
-    },
-  });
+  const { data: chatSessions } = useGetChatSessions();
+  return chatSessions;
 };
 
 const useGetMessagesBySessionQuery = (sessionId: string) => {
-  return useGetMessagesBySession(sessionId, {
-    onSuccess: (data) => {
-      console.log(data);
-    },
-    onError: (error: unknown) => {
-      console.log(error);
-    },
-  });
+  const { data: messagesBySession } = useGetMessagesBySession(sessionId);
+  return messagesBySession;
 };
 
 const useSendMessageMutation = (params: ISendMessageParams) => {

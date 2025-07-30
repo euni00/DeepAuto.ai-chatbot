@@ -8,7 +8,7 @@ import { useAtom } from 'jotai';
 import { sessionAtom } from '../store/session';
 
 export default function SideBar() {
-  const { data: chatSessions } = useGetChatSessionsQuery();
+  const chatSessions = useGetChatSessionsQuery();
   const [, setSessionId] = useAtom(sessionAtom);
 
   return (
@@ -18,18 +18,18 @@ export default function SideBar() {
         <div className="flex items-center gap-2 mb-4">
           <span className="text-lg font-semibold">DeepAuto.ai ChatBot</span>
         </div>
-          <Button
-            variant="ghost"
+        <Button
+          variant="ghost"
           className="justify-start w-full gap-3 text-zinc-200 hover:bg-zinc-800 hover:text-white"
           onClick={() => setSessionId(null)}
-          >
-            New Chat
+        >
+          New Chat
         </Button>
         <Button
-            variant="ghost"
-            className="justify-start w-full gap-3 text-zinc-200 hover:bg-zinc-800 hover:text-white"
-          >
-            Search Chat
+          variant="ghost"
+          className="justify-start w-full gap-3 text-zinc-200 hover:bg-zinc-800 hover:text-white"
+        >
+          Search Chat
         </Button>
       </div>
       <Separator className="bg-zinc-800" />
@@ -41,7 +41,7 @@ export default function SideBar() {
             <Button
               key={index}
               variant="ghost"
-              className="justify-start w-full text-zinc-300 hover:bg-zinc-800 hover:text-white px-2 py-1 rounded"
+              className="justify-start w-full text-zinc-300 hover:bg-zinc-800 hover:text-white px-2 py-1 rounded cursor-pointer"
               onClick={() => setSessionId(item.sessionId)}
             >
               {item.title}
