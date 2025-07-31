@@ -1,6 +1,7 @@
 'use client';
 
 import { sessionAtom, streamedMessageAtom } from '@/common/store/chatStore';
+import SendButton from '@/components/SendButton';
 import { useSendMessageMutation } from '@/features/chat/useChatService';
 import { useAtom } from 'jotai';
 import { useState } from 'react';
@@ -44,26 +45,7 @@ const InitChatView = () => {
                 />
               </div>
               {/* Send Button */}
-              <button
-                type="button"
-                className="p-2 hover:bg-zinc-700 rounded-lg transition-colors cursor-pointer"
-                onClick={() => sendMessage()}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="size-6 text-white"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"
-                  />
-                </svg>
-              </button>
+              <SendButton onClick={sendMessage} />
             </div>
           </div>
         </div>

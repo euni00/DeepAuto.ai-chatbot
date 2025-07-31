@@ -28,6 +28,8 @@ const useSendMessageMutation = (
 
   return useSendMessage(params, setStreamedMessage, {
     onSuccess: (data: ISendMessageData) => {
+      setStreamedMessage('');
+      setMessage('');
       if (sessionId === null) {
         setSessionId(data.sessionId);
         if (sessionId) {
@@ -45,8 +47,6 @@ const useSendMessageMutation = (
         queryClient.invalidateQueries({
           queryKey: [chatQueryKey.get],
         });
-        setStreamedMessage('');
-        setMessage('');
       }
     },
     onError: () => {

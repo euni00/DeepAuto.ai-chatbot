@@ -1,6 +1,9 @@
 'use client';
 
 import { sessionAtom, streamedMessageAtom } from '@/common/store/chatStore';
+import RoutingInfo from '@/components/RoutingInfo';
+import SendButton from '@/components/SendButton';
+import { Button } from '@/components/ui/button';
 import { TOAST_MESSAGE } from '@/constants/toastMessages';
 import {
   useGetMessagesBySessionQuery,
@@ -10,12 +13,13 @@ import { useAtom } from 'jotai';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 
-const ChatView = () => {
+const ChatView = ({ sessionId }: { sessionId: string }) => {
   const [message, setMessage] = useState('');
   const [streamedMessage, setStreamedMessage] = useAtom(streamedMessageAtom);
-  const [sessionId, setSessionId] = useAtom(sessionAtom);
-  const params = { message, sessionId };
+  const [, setSessionId] = useAtom(sessionAtom);
+  const [isOpenRoutingInfo, setIsOpenRoutingInfo] = useState(false);
 
+  const params = { message, sessionId };
   const { messagesBySession, isError } = useGetMessagesBySessionQuery(sessionId);
   const { mutate: sendMessage, isPending } = useSendMessageMutation(
     params,
@@ -42,11 +46,14 @@ const ChatView = () => {
                   <p>{item.content}</p>
                 </div>
               ) : (
-                <div className="mb-8">
-                  <div className="text-zinc-300 mb-4">
-                    <p>{item.content}</p>
+                <>
+                  <div className="mb-8">
+                    <div className="text-zinc-300 mb-4">
+                      <p>{item.content}</p>
+                    </div>
                   </div>
-                </div>
+                  {isOpenRoutingInfo && item.routing && <RoutingInfo routing={item.routing} />}
+                </>
               )}
             </div>
           ))}
@@ -65,6 +72,18 @@ const ChatView = () => {
           </>
         )}
       </div>
+      {/* Routing Info Button */}
+      <div className="sticky bottom-24 z-10 bg-zinc-900 pt-4 pb-2">
+        <div className="flex justify-end mb-4">
+          <Button
+            variant="ghost"
+            className="text-sm border-zinc-600 text-black bg-zinc-200 hover:bg-zinc-800 hover:text-white cursor-pointer"
+            onClick={() => setIsOpenRoutingInfo((prev) => !prev)}
+          >
+            {isOpenRoutingInfo ? 'Hide Routing Info' : 'Show Routing Info'}
+          </Button>
+        </div>
+      </div>
       {/* Chat Input Bar */}
       <div className="sticky bottom-0 border-t border-zinc-800 p-4">
         <div className="max-w-4xl mx-auto">
@@ -80,28 +99,7 @@ const ChatView = () => {
               />
             </div>
             {/* Send Button */}
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                className="p-2 hover:bg-zinc-700 rounded-lg transition-colors cursor-pointer"
-                onClick={() => sendMessage()}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="size-6 text-white"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"
-                  />
-                </svg>
-              </button>
-            </div>
+            <SendButton onClick={sendMessage} />
           </div>
         </div>
       </div>
