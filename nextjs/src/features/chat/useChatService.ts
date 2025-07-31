@@ -36,16 +36,13 @@ const useSendMessageMutation = (
           queryClient.invalidateQueries({
             queryKey: [chatQueryKey.getBySession, data.sessionId],
           });
-          queryClient.invalidateQueries({
-            queryKey: [chatQueryKey.get],
-          });
         }
+        queryClient.invalidateQueries({
+          queryKey: [chatQueryKey.get],
+        });
       } else {
         queryClient.invalidateQueries({
           queryKey: [chatQueryKey.getBySession, params.sessionId],
-        });
-        queryClient.invalidateQueries({
-          queryKey: [chatQueryKey.get],
         });
       }
     },
