@@ -42,7 +42,7 @@ class MessageResponse(BaseModel):
     role: str
     content: str
     created_at: str = Field(alias="createdAt")
-    routing_payload: Optional[dict] = Field(alias="routingPayload")
+    routing: Optional[dict]
     
     class Config:
         populate_by_name = True
@@ -72,7 +72,7 @@ def get_messages(session_id: UUID, db: Session = Depends(get_db)):
             role=message.role,
             content=message.content,
             created_at=message.created_at.isoformat(),
-            routing_payload=message.routing_payload
+            routing=message.routing
         )
         for message in messages
     ]
@@ -114,12 +114,15 @@ async def send_message(payload: SendMessageRequest, db: Session = Depends(get_db
     db.commit()
 
     # call DeepAuto API
+    # 1. Get 'query_routing' with stream=False mode
     try: 
-        stream = client.chat.completions.create(
+        query_routing_preview = client.chat.completions.create(
             model="openai/gpt-4o-mini-2024-07-18,deepauto/qwq-32b",
             messages=history,
-            stream=True,
+            stream=False,
         )
+        query_routing = query_routing_preview.model_dump().get("query_routing")
+
     except Exception as e: 
         return JSONResponse(
             status_code=500,
@@ -129,32 +132,50 @@ async def send_message(payload: SendMessageRequest, db: Session = Depends(get_db
             }
         );
 
+
+    # 1. Get 'content' with stream=False mode
+    stream = client.chat.completions.create(
+        model="openai/gpt-4o-mini-2024-07-18,deepauto/qwq-32b",
+        messages=history,
+        stream=True,
+    )
+
     async def stream_response():
-        loop = asyncio.get_event_loop()
         full_response = ""
-        routing_info_sent = False
 
+        # session
+        yield f"data: {json.dumps({'type': 'sessionId', 'sessionId': str(session_id)})}\n\n"
+
+        # routing
+        if query_routing:
+            routing = {
+                "type": "routing",
+                "selected": query_routing["selected_model"],
+                "grades": [
+                    {
+                        "model": g["model"],
+                        "gradeLabel": g["grade_label"],
+                        "gradeValue": g["grade_value"],
+                        "score": g["score"],
+                    }
+                    for g in query_routing["grades"]
+                ]
+            }
+            yield f"data: {json.dumps(routing)}\n\n"
+        else:
+            routing = None
+
+        # content
         for chunk in stream:
-            delta = chunk.choices[0].delta
-            content = delta.content if hasattr(delta, "content") else ""
-
-            if not routing_info_sent and hasattr(delta, "query_routing"):
-                routing_info = delta.query_routing
-                routing_payload = {
-                    "type": "routing",
-                    "selected": routing_info["selected"],
-                    "candidates": routing_info["candidates"]
-                }
-                yield f"data: {json.dumps(routing_payload)}\n\n"
-                routing_info_sent = True
+            content = chunk.choices[0].delta.content
 
             if content:
                 full_response += content
                 yield f"data: {content}\n\n"
-                await asyncio.sleep(0)  # allow context switch
+                await asyncio.sleep(0)
 
         # save assistant response
-        db.add(Message(session_id=session_id, role="assistant", content=full_response))
+        db.add(Message(session_id=session_id, role="assistant", content=full_response, routing=routing))
         db.commit()
 
     return StreamingResponse(stream_response(), media_type="text/event-stream")

@@ -15,7 +15,7 @@ class Message(Base):
     role = Column(String) # 'user' or 'assistant'
     content = Column(String)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    routing_payload = Column(JSON, nullable=True)
+    routing = Column(JSON, nullable=True)
 
     # relationship
     session = relationship("ChatSession", backref="messages")
