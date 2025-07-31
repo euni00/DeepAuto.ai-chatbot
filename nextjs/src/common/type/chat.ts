@@ -15,4 +15,15 @@ export interface ISendMessageParams {
   sessionId: string | null;
 }
 
-export type ISendMessageData = string;
+export interface ISendMessageData {
+  sessionId: string;
+  routing: {
+    selected: string;
+    grades: {
+      model: string;
+      gradeLabel: string;
+      gradeValue: number;
+      score: number;
+    }[];
+  } | null;
+}

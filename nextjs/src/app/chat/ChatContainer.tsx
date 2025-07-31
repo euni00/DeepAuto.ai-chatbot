@@ -8,7 +8,7 @@ import InitChatView from './view/InitChatView';
 const ChatContainer = () => {
   const [sessionId] = useAtom(sessionAtom);
 
-  return <>{sessionId === null ? <InitChatView /> : <ChatView sessionId={sessionId} />}</>;
+  return <>{sessionId === null ? <InitChatView /> : <ChatView />}</>;
 };
 
 export default ChatContainer;

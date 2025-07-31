@@ -1,6 +1,6 @@
 'use client';
 
-import { ISendMessageParams } from '@/common/type/chat';
+import { ISendMessageData, ISendMessageParams } from '@/common/type/chat';
 import { useMutation, UseMutationOptions, useQuery } from '@tanstack/react-query';
 import { getChatSessionsData, getMessagesBySessionData, sendMessageData } from './api';
 import chatQueryKey from './queryKeys';
@@ -22,7 +22,7 @@ const useGetMessagesBySession = (sessionId: string) => {
 const useSendMessage = (
   params: ISendMessageParams,
   setStreamedMessage: (streamedMessage: string) => void,
-  option: UseMutationOptions
+  option: UseMutationOptions<ISendMessageData, Error, void, unknown>
 ) => {
   return useMutation({
     mutationKey: [chatQueryKey.sendMessage],

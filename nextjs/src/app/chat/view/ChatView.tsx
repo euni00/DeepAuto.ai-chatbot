@@ -1,6 +1,6 @@
 'use client';
 
-import { streamedMessageAtom } from '@/common/store/chatStore';
+import { sessionAtom, streamedMessageAtom } from '@/common/store/chatStore';
 import { TOAST_MESSAGE } from '@/constants/toastMessages';
 import {
   useGetMessagesBySessionQuery,
@@ -10,16 +10,19 @@ import { useAtom } from 'jotai';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 
-const ChatView = ({ sessionId }: { sessionId: string }) => {
+const ChatView = () => {
   const [message, setMessage] = useState('');
   const [streamedMessage, setStreamedMessage] = useAtom(streamedMessageAtom);
+  const [sessionId, setSessionId] = useAtom(sessionAtom);
   const params = { message, sessionId };
 
   const { messagesBySession, isError } = useGetMessagesBySessionQuery(sessionId);
   const { mutate: sendMessage, isPending } = useSendMessageMutation(
     params,
     setStreamedMessage,
-    setMessage
+    setMessage,
+    sessionId,
+    setSessionId
   );
 
   if (isError) {

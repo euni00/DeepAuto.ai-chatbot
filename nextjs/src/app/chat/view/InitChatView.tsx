@@ -1,13 +1,23 @@
 'use client';
 
-// import { useState } from 'react';
-// import { useSendMessageMutation } from '@/features/chat/useChatService';
+import { sessionAtom, streamedMessageAtom } from '@/common/store/chatStore';
+import { useSendMessageMutation } from '@/features/chat/useChatService';
+import { useAtom } from 'jotai';
+import { useState } from 'react';
 
 const InitChatView = () => {
-  // const [message, setMessage] = useState('');
-  // const params = { message, sessionId: null };
+  const [message, setMessage] = useState('');
+  const [, setStreamedMessage] = useAtom(streamedMessageAtom);
+  const [sessionId, setSessionId] = useAtom(sessionAtom);
+  const params = { message, sessionId: null };
 
-  // const { mutate: sendMessage } = useSendMessageMutation(params);
+  const { mutate: sendMessage } = useSendMessageMutation(
+    params,
+    setStreamedMessage,
+    setMessage,
+    sessionId,
+    setSessionId
+  );
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center min-h-screen bg-zinc-900 p-4">
@@ -15,7 +25,9 @@ const InitChatView = () => {
       <div className="flex flex-col items-center max-w-2xl w-full">
         {/* Central Prompt */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-semibold text-white mb-4">Hope you have an energetic day!</h1>
+          <h1 className="text-3xl font-semibold text-white mb-4">
+            Hope you have an energetic day!
+          </h1>
         </div>
         {/* Input Field */}
         <div className="w-full max-w-3xl">
@@ -27,10 +39,16 @@ const InitChatView = () => {
                   type="text"
                   placeholder="Feel free to ask anything"
                   className="w-full bg-transparent text-white placeholder-zinc-400 outline-none text-lg"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
                 />
               </div>
               {/* Send Button */}
-              <button className="p-2 hover:bg-zinc-700 rounded-lg transition-colors">
+              <button
+                type="button"
+                className="p-2 hover:bg-zinc-700 rounded-lg transition-colors cursor-pointer"
+                onClick={() => sendMessage()}
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"

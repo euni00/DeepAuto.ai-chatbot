@@ -1,5 +1,12 @@
-import { IChatSessionsData, IMessagesBySessionData, ISendMessageParams } from '@/common/type/chat';
+import {
+  IChatSessionsData,
+  IMessagesBySessionData,
+  ISendMessageData,
+  ISendMessageParams,
+} from '@/common/type/chat';
+import { TOAST_MESSAGE } from '@/constants/toastMessages';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import endpoints from './endpoints';
 
 const { BASE_URL, CHAT, SESSIONS } = endpoints;
@@ -21,7 +28,7 @@ const sendMessageData = (
   params: ISendMessageParams,
   setStreamedMessage: (streamedMessage: string) => void
 ) => {
-  return async () => {
+  return async (): Promise<ISendMessageData> => {
     const response = await fetch(`${BASE_URL}/${CHAT}/send`, {
       method: 'POST',
       headers: {
@@ -30,11 +37,17 @@ const sendMessageData = (
       body: JSON.stringify(params),
     });
 
-    if (!response.body) return;
+    if (!response.body) {
+      toast.error(TOAST_MESSAGE.ERROR.SEND_MESSAGES);
+      throw new Error('Response body Error');
+    }
 
     const reader = response.body.getReader();
     const decoder = new TextDecoder('utf-8');
+
     let result = '';
+    let sessionId: string | null = null;
+    let routing = null;
 
     while (true) {
       const { done, value } = await reader.read();
@@ -42,12 +55,32 @@ const sendMessageData = (
 
       const chunk = decoder.decode(value, { stream: true });
       const lines = chunk.split('\n').filter((line) => line.startsWith('data: '));
+
       for (const line of lines) {
         const text = line.replace(/^data: /, '');
-        result += text;
-        setStreamedMessage(result);
+
+        try {
+          const json = JSON.parse(text);
+
+          if (json.type === 'sessionId') {
+            sessionId = json.sessionId;
+          } else if (json.type === 'routing') {
+            routing = {
+              selected: json.selected,
+              grades: json.grades,
+            };
+          }
+        } catch {
+          result += text;
+          setStreamedMessage(result);
+        }
       }
     }
+
+    return {
+      sessionId: sessionId ?? '',
+      routing,
+    };
   };
 };
 
